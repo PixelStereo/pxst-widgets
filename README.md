@@ -1,2 +1,4 @@
-# pyqt5-widgets
-PyQt5 widgets collection
+pxst-widgets
+============
+
+Widgets collection for creative applications
