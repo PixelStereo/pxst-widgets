@@ -267,8 +267,10 @@ class ListUI(AbstractValue):
         self.parameter.add_callback(self.parameter_update)
 
     def parameter_update(self, value):
+        display = ''.join(str(e) for e in value)
         # TODO : please remove brackets from list here
-        self.value.setText(str(value))
+        print(display)
+        #self.value.setText(display)
 
 
 class StringUI(AbstractValue):
