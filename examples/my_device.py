@@ -26,6 +26,11 @@ my_char = my_device.add_param('test/special/char', value_type='char', default_va
 
 my_device.root_node.reset()
 
+def update_vec2f(value):
+    print(value)
+
+my_vec2f.add_callback(update_vec2f)
+
 """
 print('--- -EXPLORE PYOSSIA Test DEVICE- ---')
 for node in my_device.root_node.get_nodes():

@@ -360,6 +360,7 @@ class ListUI(TextUI):
         self.parameter.add_callback(self.new_value)
 
     def parameter_update(self, value):
+        display = ''.join(str(e) for e in value)
         # TODO : please remove brackets from list here
         self.value.setText(", ".join(value))
 
@@ -368,6 +369,7 @@ class ListUI(TextUI):
         Set the value of the GUI
         """
         self.value.setText(str(value))
+
 
 
 class StringUI(TextUI):
