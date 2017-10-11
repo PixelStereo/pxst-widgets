@@ -197,8 +197,17 @@ class Vec2fUI(AbstractValue):
         """
         check if a new value is there
         """
-        if new_value[0] != self.value1.value() and new_value[1] != self.value2.value():
-            self.parameter_update(new_value)
+        new_value1 = int(new_value[0]*32768)
+        new_value2 = int(new_value[1]*32768)
+        print(1, new_value1, self.value1.value())
+        print(2, new_value2, self.value2.value())
+        if new_value1 != self.value1.value():
+            self.value1.setValue(new_value1)
+        if new_value2 != self.value2.value():
+            print(222222)
+            self.value2.setValue(new_value2)
+        print(333333)
+
 
 class Vec3fUI(AbstractValue):
     """
@@ -252,8 +261,15 @@ class Vec3fUI(AbstractValue):
         """
         check if a new value is there
         """
-        if new_value[0] != self.value1.value() and new_value[1] != self.value2.value() and new_value[2] != self.value3.value():
-            self.parameter_update(new_value)
+        new_value1 = int(new_value[0]*32768)
+        new_value2 = int(new_value[1]*32768)
+        new_value3 = int(new_value[2]*32768)
+        if new_value1 != self.value1.value():
+            self.value1.setValue(new_value2)
+        if new_value2 != self.value2.value():
+            self.value2.setValue(new_value2)
+        if new_value3 != self.value3.value():
+            self.value3.setValue(new_value3)
 
 
 class Vec4fUI(AbstractValue):
@@ -317,8 +333,18 @@ class Vec4fUI(AbstractValue):
         """
         check if a new value is there
         """
-        if new_value[0] != self.value1.value() and new_value[1] != self.value2.value() and new_value[2] != self.value3.value() and new_value[3] != self.value4.value():
-            self.parameter_update(new_value)
+        new_value1 = int(new_value[0]*32768)
+        new_value2 = int(new_value[1]*32768)
+        new_value3 = int(new_value[2]*32768)
+        new_value4 = int(new_value[3]*32768)
+        if new_value1 != self.value1.value():
+            self.value1.setValue(new_value2)
+        if new_value2 != self.value2.value():
+            self.value2.setValue(new_value2)
+        if new_value3 != self.value3.value():
+            self.value3.setValue(new_value3)
+        if new_value4 != self.value4.value():
+            self.value4.setValue(new_value4)
 
 
 class CharUI(TextUI):
@@ -361,7 +387,7 @@ class ListUI(TextUI):
 
     def parameter_update(self, value):
         display = ''.join(str(e) for e in value)
-        # TODO : please remove brackets from list here
+        # TODO : please remove brackets from list her
         self.value.setText(", ".join(value))
 
     def setValue(self, value):
