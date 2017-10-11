@@ -34,6 +34,43 @@ class AbstractValue(QGroupBox):
         #self.setFixedSize(300, 45)
         self.setFixedWidth(300)
 
+    def setValue(self, value):
+        """
+        Set the value of the GUI
+        """
+        self.value.setValue(value)
+
+    def new_value(self, new_value):
+        """
+        check if a new value is there
+        """
+        if new_value != self.value.value():
+            self.parameter_update(new_value)
+
+
+class TextUI(AbstractValue):
+    """
+
+    """
+    def __init__(self, parameter):
+        super(TextUI, self).__init__(parameter)
+
+    def setValue(self, value):
+        """
+        Set the value of the GUI
+        """
+        self.value.setText(value)
+
+    def new_value(self, new_value):
+        """
+        check if a new value is there
+        """
+        if new_value != self.value.text():
+            self.parameter_update(new_value)
+
+    def parameter_update(self, value):
+        self.value.setText(str(value))
+
 
 class BoolUI(AbstractValue):
     """
@@ -47,7 +84,7 @@ class BoolUI(AbstractValue):
         if self.parameter.have_domain():
             ### SOMETHING TO DO
             print('do something please with domain of ' + str(self.parameter))
-        self.parameter.add_callback(self.parameter_update)
+        self.parameter.add_callback(self.new_value)
         self.value.toggled.connect(self.parameter_push)
         self.value.setChecked(self.parameter.value)
 
@@ -60,6 +97,18 @@ class BoolUI(AbstractValue):
         self.parameter.value = value
         self.value.setText(str(value))
 
+    def setValue(self, value):
+        """
+        Set the value of the GUI
+        """
+        self.value.setChecked(value)
+
+    def new_value(self, new_value):
+        """
+        check if a new value is there
+        """
+        if new_value != self.value.isChecked():
+            self.parameter_update(new_value)
 
 class IntUI(AbstractValue):
     """
@@ -73,7 +122,7 @@ class IntUI(AbstractValue):
             self.value.setRange(self.parameter.domain.min, self.parameter.domain.max)
         else:
             self.value.setRange(0, 100)
-        self.parameter.add_callback(self.parameter_update)
+        self.parameter.add_callback(self.new_value)
         self.value.valueChanged.connect(self.parameter.push_value)
 
     def parameter_update(self, value):
@@ -97,7 +146,7 @@ class FloatUI(AbstractValue):
         def parameter_push(value):
             value = float(value/32768)
             self.parameter.value = value
-        self.parameter.add_callback(self.parameter_update)
+        self.parameter.add_callback(self.new_value)
         self.value.valueChanged.connect(parameter_push)
 
     def parameter_update(self, value):
@@ -119,8 +168,8 @@ class Vec2fUI(AbstractValue):
         self.value1.setRange(0, 32768)
         self.value2.setRange(0, 32768)
         def parameter_push():
-            value_1 = self.value1.value()/32768
-            value_2 = self.value2.value()/32768
+            value_1 = round(self.value1.value()/32768, 4)
+            value_2 = round(self.value2.value()/32768, 4)
             self.parameter.value = [value_1, value_2]
         self.value1.valueChanged.connect(parameter_push)
         self.value2.valueChanged.connect(parameter_push)
@@ -129,13 +178,27 @@ class Vec2fUI(AbstractValue):
         if self.parameter.have_domain():
             ### SOMETHING TO DO
             print('do something please with domain of ' + str(self.parameter))
-        self.parameter.add_callback(self.parameter_update)
+        self.parameter.add_callback(self.new_value)
 
     def parameter_update(self, value):
+        print('------UPDATE-------', value)
         value1 = int(value[0]*32768)
         value2 = int(value[1]*32768)
-        self.value1.setValue(15000)
-        self.value2.setValue(30000)
+        self.setValue([value1, value2])
+
+    def setValue(self, value):
+        """
+        Set the value of the GUI
+        """
+        self.value1.setValue(value[0])
+        self.value2.setValue(value[1])
+
+    def new_value(self, new_value):
+        """
+        check if a new value is there
+        """
+        if new_value[0] != self.value1.value() and new_value[1] != self.value2.value():
+            self.parameter_update(new_value)
 
 class Vec3fUI(AbstractValue):
     """
@@ -169,15 +232,29 @@ class Vec3fUI(AbstractValue):
         if self.parameter.have_domain():
             ### SOMETHING TO DO
             print('do something please with domain of ' + str(self.parameter))
-        self.parameter.add_callback(self.parameter_update)
+        self.parameter.add_callback(self.new_value)
 
     def parameter_update(self, value):
         value1 = int(value[0]*32768)
         value2 = int(value[1]*32768)
         value3 = int(value[2]*32768)
-        self.value1.setValue(value1)
-        self.value2.setValue(value2)
-        self.value3.setValue(value3)
+        self.setValue([value1, value2, value3])
+
+    def setValue(self, value):
+        """
+        Set the value of the GUI
+        """
+        self.value1.setValue(value[0])
+        self.value2.setValue(value[1])
+        self.value3.setValue(value[2])
+
+    def new_value(self, new_value):
+        """
+        check if a new value is there
+        """
+        if new_value[0] != self.value1.value() and new_value[1] != self.value2.value() and new_value[2] != self.value3.value():
+            self.parameter_update(new_value)
+
 
 class Vec4fUI(AbstractValue):
     """
@@ -218,20 +295,33 @@ class Vec4fUI(AbstractValue):
         if self.parameter.have_domain():
             ### SOMETHING TO DO
             print('do something please with domain of ' + str(self.parameter))
-        self.parameter.add_callback(self.parameter_update)
+        self.parameter.add_callback(self.new_value)
 
     def parameter_update(self, value):
         value1 = int(value[0]*32768)
         value2 = int(value[1]*32768)
         value3 = int(value[2]*32768)
         value4 = int(value[3]*32768)
-        self.value1.setValue(value1)
-        self.value2.setValue(value2)
-        self.value3.setValue(value3)
-        self.value4.setValue(value4)
+        self.setValue([value1, value2, value3, value4])
+
+    def setValue(self, value):
+        """
+        Set the value of the GUI
+        """
+        self.value1.setValue(value[0])
+        self.value2.setValue(value[1])
+        self.value3.setValue(value[2])
+        self.value4.setValue(value[3])
+
+    def new_value(self, new_value):
+        """
+        check if a new value is there
+        """
+        if new_value[0] != self.value1.value() and new_value[1] != self.value2.value() and new_value[2] != self.value3.value() and new_value[3] != self.value4.value():
+            self.parameter_update(new_value)
 
 
-class CharUI(AbstractValue):
+class CharUI(TextUI):
     """
     docstring for StringUI
     """
@@ -244,14 +334,14 @@ class CharUI(AbstractValue):
             ### SOMETHING TO DO
             print('do something please with domain of ' + str(self.parameter))
         self.value.textEdited.connect(self.parameter.push_value)
-        self.parameter.add_callback(self.parameter_update)
+        self.parameter.add_callback(self.new_value)
 
     def parameter_update(self, value):
         # TODO : please format is as a chat
         self.value.setText(str(value))
 
 
-class ListUI(AbstractValue):
+class ListUI(TextUI):
     """
     docstring for StringUI
     """
@@ -263,15 +353,24 @@ class ListUI(AbstractValue):
         if self.parameter.have_domain():
             ### SOMETHING TO DO
             print('do something please with domain of ' + str(self.parameter))
-        self.value.textEdited.connect(self.parameter.push_value)
-        self.parameter.add_callback(self.parameter_update)
+        def parameter_push(value):
+            value = value.split(' ')
+            self.parameter.value = value
+        self.value.textEdited.connect(parameter_push)
+        self.parameter.add_callback(self.new_value)
 
     def parameter_update(self, value):
         # TODO : please remove brackets from list here
+        self.value.setText(", ".join(value))
+
+    def setValue(self, value):
+        """
+        Set the value of the GUI
+        """
         self.value.setText(str(value))
 
 
-class StringUI(AbstractValue):
+class StringUI(TextUI):
     """
     docstring for StringUI
     """
@@ -284,7 +383,5 @@ class StringUI(AbstractValue):
             ### SOMETHING TO DO
             print('do something please with domain of ' + str(self.parameter))
         self.value.textEdited.connect(self.parameter.push_value)
-        self.parameter.add_callback(self.parameter_update)
+        self.parameter.add_callback(self.new_value)
 
-    def parameter_update(self, value):
-        self.value.setText(str(value))

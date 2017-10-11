@@ -6,6 +6,7 @@ This file is an example of a device
 with I/O communication provided by libossia
 """
 
+import pyossia
 from pyossia import ossia, add_param
 from pxst_widgets.panel import Panel
 import sys

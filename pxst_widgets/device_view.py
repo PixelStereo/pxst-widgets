@@ -37,7 +37,9 @@ class DeviceView(Panel):
                 self.setTitle(str(self.device))
             #self.setTitle(str(self.device.get_nodes()[0]))
             for param in self.device.root_node.get_parameters():
-                self.layout.addWidget(self.add_remote(param))
+                remote = self.add_remote(param)
+                self.layout.addWidget(remote)
+                remote.setValue(param.value)
 
     def resize(self, args, kwargs):
         """
