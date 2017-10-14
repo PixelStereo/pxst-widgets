@@ -27,8 +27,8 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         # read a css for the whole MainWindow
-        #qss = open("style.qss", "r").read()
-        #self.setStyleSheet(qss)
+        qss = open("style.qss", "r").read()
+        self.setStyleSheet(qss)
         self.setAutoFillBackground(True)
         # Draw an UI for my_device
         self.panel = DeviceView(device=my_device, width='auto', height='auto')

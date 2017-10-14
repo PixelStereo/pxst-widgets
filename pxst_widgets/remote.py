@@ -14,6 +14,7 @@ from PyQt5.QtGui import QFont
 
 class AbstractValue(QGroupBox):
     """
+    This must be sublassed
     PyQt Widget that display label with parameter of the parameter
     float / int : QSlider + QSpinbox
     string : QLineEdit
@@ -50,7 +51,7 @@ class AbstractValue(QGroupBox):
 
 class TextUI(AbstractValue):
     """
-
+    This must be subclassed
     """
     def __init__(self, parameter):
         super(TextUI, self).__init__(parameter)
@@ -168,8 +169,8 @@ class Vec2fUI(AbstractValue):
         self.value1.setRange(0, 32768)
         self.value2.setRange(0, 32768)
         def parameter_push():
-            value_1 = round(self.value1.value()/32768, 4)
-            value_2 = round(self.value2.value()/32768, 4)
+            value_1 = self.value1.value()/32768
+            value_2 = self.value2.value()/32768
             self.parameter.value = [value_1, value_2]
         self.value1.valueChanged.connect(parameter_push)
         self.value2.valueChanged.connect(parameter_push)
@@ -181,10 +182,9 @@ class Vec2fUI(AbstractValue):
         self.parameter.add_callback(self.new_value)
 
     def parameter_update(self, value):
-        print('------UPDATE-------', value)
-        value1 = int(value[0]*32768)
-        value2 = int(value[1]*32768)
-        self.setValue([value1, value2])
+        value1 = value[0]
+        value2 = value[1]
+        self.new_value([value1, value2])
 
     def setValue(self, value):
         """
@@ -195,18 +195,15 @@ class Vec2fUI(AbstractValue):
 
     def new_value(self, new_value):
         """
-        check if a new value is there
+        check if a new value is different than current UI value
+        if yes, it will update it
         """
-        new_value1 = int(new_value[0]*32768)
-        new_value2 = int(new_value[1]*32768)
-        print(1, new_value1, self.value1.value())
-        print(2, new_value2, self.value2.value())
+        new_value1 = new_value[0]
+        new_value2 = new_value[1]
         if new_value1 != self.value1.value():
-            self.value1.setValue(new_value1)
+            self.value1.setValue(int(new_value1*32768))
         if new_value2 != self.value2.value():
-            print(222222)
-            self.value2.setValue(new_value2)
-        print(333333)
+            self.value2.setValue(int(new_value2*32768))
 
 
 class Vec3fUI(AbstractValue):
@@ -253,9 +250,9 @@ class Vec3fUI(AbstractValue):
         """
         Set the value of the GUI
         """
-        self.value1.setValue(value[0])
-        self.value2.setValue(value[1])
-        self.value3.setValue(value[2])
+        self.value1.setValue(int(value[0]*32768))
+        self.value2.setValue(int(value[1]*32768))
+        self.value3.setValue(int(value[2]*32768))
 
     def new_value(self, new_value):
         """
@@ -300,6 +297,7 @@ class Vec4fUI(AbstractValue):
             value_3 = self.value3.value()/32768
             value_4 = self.value4.value()/32768
             self.parameter.value = [value_1, value_2, value_3, value_4]
+        # TODO : separate in 4 parameter1_push etc…
         self.value1.valueChanged.connect(parameter_push)
         self.value2.valueChanged.connect(parameter_push)
         self.value3.valueChanged.connect(parameter_push)
@@ -313,21 +311,14 @@ class Vec4fUI(AbstractValue):
             print('do something please with domain of ' + str(self.parameter))
         self.parameter.add_callback(self.new_value)
 
-    def parameter_update(self, value):
-        value1 = int(value[0]*32768)
-        value2 = int(value[1]*32768)
-        value3 = int(value[2]*32768)
-        value4 = int(value[3]*32768)
-        self.setValue([value1, value2, value3, value4])
-
     def setValue(self, value):
         """
         Set the value of the GUI
         """
-        self.value1.setValue(value[0])
-        self.value2.setValue(value[1])
-        self.value3.setValue(value[2])
-        self.value4.setValue(value[3])
+        self.value1.setValue(int(value[0]*32768))
+        self.value2.setValue(int(value[1]*32768))
+        self.value3.setValue(int(value[2]*32768))
+        self.value4.setValue(int(value[3]*32768))
 
     def new_value(self, new_value):
         """
@@ -338,7 +329,7 @@ class Vec4fUI(AbstractValue):
         new_value3 = int(new_value[2]*32768)
         new_value4 = int(new_value[3]*32768)
         if new_value1 != self.value1.value():
-            self.value1.setValue(new_value2)
+            self.value1.setValue(new_value1)
         if new_value2 != self.value2.value():
             self.value2.setValue(new_value2)
         if new_value3 != self.value3.value():
