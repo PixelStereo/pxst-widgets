@@ -8,7 +8,28 @@ It is designed to display instruments through remotes
 
 from pxst_widgets.panel import Panel
 from pyossia import ossia
-from PyQt5.Qt import QTimer, QThread
+from PyQt5.Qt import QTimer, QThread, pyqtSignal
+
+
+class Updater(QThread):
+    """docstring for Updater"""
+    param_update = pyqtSignal(ossia.Parameter, object)
+    def __init__(self, parent):
+        super(Updater, self).__init__()
+        self.msgq = parent.msgq
+        self.start()
+
+    def __del__(self):
+        self.wait()
+
+    def run(self):
+        while True:
+            pass
+            param_update = self.msgq.pop()
+            if param_update != None:
+                print('-- something new --', param_update)
+                parameter, value = param_update
+                self.param_update.emit(parameter, value)
 
 
 class DeviceUpdater(QThread):
@@ -16,18 +37,11 @@ class DeviceUpdater(QThread):
     def __init__(self, parent):
         super(DeviceUpdater, self).__init__()
         self.msgq = parent.msgq
-        self.view_db = parent.view_db
         self.start()
+        self.updater = None
 
     def run(self):
-        from time import sleep
-        while True:
-            param_update = self.msgq.pop()
-            if param_update != None:
-                print('-- something new --', param_update)
-                parameter, value = param_update
-                self.view_db[parameter].setValue(value)
-            sleep(0.01)
+        self.updater = Updater(self)
 
     def __del__(self):
         self.wait()
@@ -55,6 +69,7 @@ class DeviceView(Panel):
         create a Remote for each parameter
         """
         self.msgq = ossia.MessageQueue(self.device)
+        self.updater = DeviceUpdater(self)
         # set title for the DeviceView
         try:
             self.setTitle(self.device.name)
@@ -65,10 +80,13 @@ class DeviceView(Panel):
             remote = self.add_remote(param)
             self.view_db.setdefault(param, remote)
             self.msgq.register(param)
+            self.updater.updater.param_update.connect(self.parameter_update)
             # REFLECT STATE
             #remote.setValue(param.value)
             self.layout.addWidget(remote)
-        self.updater = DeviceUpdater(self)
+
+    def parameter_update(self, parameter, value):
+        self.view_db[parameter].new_value(value)
 
     def resize(self, mode='auto'):
         """

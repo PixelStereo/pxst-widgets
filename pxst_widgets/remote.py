@@ -31,25 +31,19 @@ class AbstractValue(QGroupBox):
         #self.setFixedSize(300, 45)
         self.setFixedWidth(300)
 
-    def setValue(self, value):
-        """
-        The setValue method is used to set the UI to a value
-        """
-        self.value.blockSignals(True)
-        self.value.setUpdatesEnabled(False)
-        self.setUI(value)
-        self.value.blockSignals(False)
-        self.value.setUpdatesEnabled(True)
-
-    def new_value(self, new_value):
+    def new_value(self, value):
         """
         check if a new value is there
         """
-        if new_value != self.value.value():
+        if value != self.getUI():
             print('new_value_call')
             # this is a new value, please set the UI
             # block signal from new value
-            self.setValue(new_value)
+            self.value.blockSignals(True)
+            self.value.setUpdatesEnabled(False)
+            self.setUI(value)
+            self.value.blockSignals(False)
+            self.value.setUpdatesEnabled(True)
 
 
 class IntUI(AbstractValue):
@@ -76,6 +70,64 @@ class IntUI(AbstractValue):
     def setUI(self, value):
         self.value.setSliderPosition(value)
 
+    def getUI(self):
+        return self.value.sliderPosition()
+
+
+class FloatUI(AbstractValue):
+    """
+    docstring for FloatUI
+    """
+    def __init__(self, parameter):
+        super(FloatUI, self).__init__(parameter)
+        self.value = QSlider(Qt.Horizontal, None)
+        self.layout.addWidget(self.value)
+        print('-----', self.parameter.have_domain())
+        if self.parameter.have_domain():
+            if self.parameter.min:
+                range_min = self.parameter.min*32768
+            else:
+                range_min = 0
+            if self.parameter.max:
+                range_max = self.parameter.max*32768
+            else:
+                range_max = 32768
+            self.value.setRange(range_min, range_max)
+        else:
+            self.value.setRange(0, 32768)
+        def parameter_push(value):
+            value = float(value/32768)
+            self.parameter.push_value(value)
+        self.value.valueChanged.connect(parameter_push)
+
+    def setUI(self, value):
+        self.value.setSliderPosition(value*32768)
+
+    def getUI(self):
+        return self.value.sliderPosition()/32768
+
+class BoolUI(AbstractValue):
+    """
+    docstring for BoolUI
+    """
+    def __init__(self, parameter):
+        super(BoolUI, self).__init__(parameter)
+        self.value = QPushButton(str(self.parameter.value))
+        self.value.setCheckable(True)
+        self.layout.addWidget(self.value)
+        if self.parameter.have_domain():
+            ### SOMETHING TO DO
+            print('do something please with domain of ' + str(self.parameter))
+        self.value.toggled.connect(self.parameter.push_value)
+        self.value.setChecked(self.parameter.value)
+
+    def setUI(self, value):
+        self.value.setChecked(value)
+        self.value.setText(str(value))
+
+    def getUI(self):
+        return self.value.isChecked()
+
 
 class TextUI(AbstractValue):
     """
@@ -101,74 +153,6 @@ class TextUI(AbstractValue):
         self.value.setText(str(value))
 
 
-class BoolUI(AbstractValue):
-    """
-    docstring for BoolUI
-    """
-    def __init__(self, parameter):
-        super(BoolUI, self).__init__(parameter)
-        self.value = QPushButton(str(self.parameter.value))
-        self.value.setCheckable(True)
-        self.layout.addWidget(self.value)
-        if self.parameter.have_domain():
-            ### SOMETHING TO DO
-            print('do something please with domain of ' + str(self.parameter))
-        self.parameter.add_callback(self.new_value)
-        self.value.toggled.connect(self.parameter_push)
-        self.value.setChecked(self.parameter.value)
-
-    def parameter_update(self, value):
-        self.value.setChecked(value)
-        self.value.setText(str(value))
-
-    def parameter_push(self):
-        value = self.value.isChecked()
-        self.parameter.value = value
-        self.value.setText(str(value))
-
-    def setValue(self, value):
-        """
-        Set the value of the GUI
-        """
-        self.value.setChecked(value)
-
-    def new_value(self, new_value):
-        """
-        check if a new value is there
-        """
-        if new_value != self.value.isChecked():
-            self.parameter_update(new_value)
-
-
-class FloatUI(AbstractValue):
-    """
-    docstring for FloatUI
-    """
-    def __init__(self, parameter):
-        super(FloatUI, self).__init__(parameter)
-        self.value = QSlider(Qt.Horizontal, None)
-        self.layout.addWidget(self.value)
-        if self.parameter.have_domain():
-            if self.parameter.domain.min:
-                range_min = self.parameter.domain.min*32768
-            else:
-                range_min = 0
-            if self.parameter.domain.max:
-                range_max = self.parameter.domain.max*32768
-            else:
-                range_max = 100
-            self.value.setRange(range_min, range_max)
-        else:
-            self.value.setRange(0, 32768)
-        def parameter_push(value):
-            value = float(value/32768)
-            self.parameter.value = value
-        self.parameter.add_callback(self.new_value)
-        self.value.valueChanged.connect(parameter_push)
-
-    def parameter_update(self, value):
-        value = value*32768
-        self.value.setValue(value)
 
 class Vec2fUI(AbstractValue):
     """
