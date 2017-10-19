@@ -113,6 +113,7 @@ class BoolUI(AbstractValue):
         super(BoolUI, self).__init__(parameter)
         self.value = QPushButton(str(self.parameter.value))
         self.value.setCheckable(True)
+        self.value.toggled.connect(lambda value: self.value.setText(str(value)))
         self.layout.addWidget(self.value)
         if self.parameter.have_domain():
             ### SOMETHING TO DO
