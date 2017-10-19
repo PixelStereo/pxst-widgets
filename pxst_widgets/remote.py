@@ -36,7 +36,6 @@ class AbstractValue(QGroupBox):
         check if a new value is there
         """
         if value != self.getUI():
-            print('new_value_call')
             # this is a new value, please set the UI
             # block signal from new value
             self.value.blockSignals(True)
@@ -119,7 +118,6 @@ class BoolUI(AbstractValue):
             ### SOMETHING TO DO
             print('do something please with domain of ' + str(self.parameter))
         self.value.toggled.connect(self.parameter.push_value)
-        self.value.setChecked(self.parameter.value)
 
     def setUI(self, value):
         self.value.setChecked(value)
@@ -136,21 +134,63 @@ class TextUI(AbstractValue):
     def __init__(self, parameter):
         super(TextUI, self).__init__(parameter)
 
-    def setValue(self, value):
-        """
-        Set the value of the GUI
-        """
-        self.value.setText(value)
-
-    def new_value(self, new_value):
-        """
-        check if a new value is there
-        """
-        if new_value != self.value.text():
-            self.parameter_update(new_value)
-
-    def parameter_update(self, value):
+    def setUI(self, value):
         self.value.setText(str(value))
+
+    def getUI(self):
+        return self.value.text()
+
+
+class CharUI(TextUI):
+    """
+    docstring for StringUI
+    """
+    def __init__(self, parameter):
+        super(CharUI, self).__init__(parameter)
+        self.value = QLineEdit()
+        self.value.setAttribute(Qt.WA_MacShowFocusRect, 0)
+        self.layout.addWidget(self.value)
+        if self.parameter.have_domain():
+            ### SOMETHING TO DO
+            print('do something please with domain of ' + str(self.parameter))
+        self.value.textEdited.connect(self.parameter.push_value)
+
+
+class ListUI(TextUI):
+    """
+    docstring for StringUI
+    """
+    def __init__(self, parameter):
+        super(ListUI, self).__init__(parameter)
+        self.value = QLineEdit()
+        self.value.setAttribute(Qt.WA_MacShowFocusRect, 0)
+        self.layout.addWidget(self.value)
+        if self.parameter.have_domain():
+            ### SOMETHING TO DO
+            print('do something please with domain of ' + str(self.parameter))
+        def parameter_push(value):
+            value = value.split(' ')
+            self.parameter.value = value
+        self.value.textEdited.connect(parameter_push)
+
+
+    def setUI(self, value):
+        self.value.setText(", ".join(value))
+
+
+class StringUI(TextUI):
+    """
+    docstring for StringUI
+    """
+    def __init__(self, parameter):
+        super(StringUI, self).__init__(parameter)
+        self.value = QLineEdit()
+        self.value.setAttribute(Qt.WA_MacShowFocusRect, 0)
+        self.layout.addWidget(self.value)
+        if self.parameter.have_domain():
+            ### SOMETHING TO DO
+            print('do something please with domain of ' + str(self.parameter))
+        self.value.textEdited.connect(self.parameter.push_value)
 
 
 
@@ -337,70 +377,4 @@ class Vec4fUI(AbstractValue):
         if new_value4 != self.value4.value():
             self.value4.setValue(new_value4)
 
-
-class CharUI(TextUI):
-    """
-    docstring for StringUI
-    """
-    def __init__(self, parameter):
-        super(CharUI, self).__init__(parameter)
-        self.value = QLineEdit()
-        self.value.setAttribute(Qt.WA_MacShowFocusRect, 0)
-        self.layout.addWidget(self.value)
-        if self.parameter.have_domain():
-            ### SOMETHING TO DO
-            print('do something please with domain of ' + str(self.parameter))
-        self.value.textEdited.connect(self.parameter.push_value)
-        self.parameter.add_callback(self.new_value)
-
-    def parameter_update(self, value):
-        # TODO : please format is as a chat
-        self.value.setText(str(value))
-
-
-class ListUI(TextUI):
-    """
-    docstring for StringUI
-    """
-    def __init__(self, parameter):
-        super(ListUI, self).__init__(parameter)
-        self.value = QLineEdit()
-        self.value.setAttribute(Qt.WA_MacShowFocusRect, 0)
-        self.layout.addWidget(self.value)
-        if self.parameter.have_domain():
-            ### SOMETHING TO DO
-            print('do something please with domain of ' + str(self.parameter))
-        def parameter_push(value):
-            value = value.split(' ')
-            self.parameter.value = value
-        self.value.textEdited.connect(parameter_push)
-        self.parameter.add_callback(self.new_value)
-
-    def parameter_update(self, value):
-        display = ''.join(str(e) for e in value)
-        # TODO : please remove brackets from list her
-        self.value.setText(", ".join(value))
-
-    def setValue(self, value):
-        """
-        Set the value of the GUI
-        """
-        self.value.setText(str(value))
-
-
-
-class StringUI(TextUI):
-    """
-    docstring for StringUI
-    """
-    def __init__(self, parameter):
-        super(StringUI, self).__init__(parameter)
-        self.value = QLineEdit()
-        self.value.setAttribute(Qt.WA_MacShowFocusRect, 0)
-        self.layout.addWidget(self.value)
-        if self.parameter.have_domain():
-            ### SOMETHING TO DO
-            print('do something please with domain of ' + str(self.parameter))
-        self.value.textEdited.connect(self.parameter.push_value)
-        self.parameter.add_callback(self.new_value)
 

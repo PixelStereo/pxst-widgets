@@ -58,9 +58,10 @@ class MainWindow(QMainWindow):
         listener.remove_device.connect(self.remove_device)
 
     def add_device(self, name, server, port):
-        print('yeah')
+        print('yeah : ' + 'ws://' + server + ':' + str(port))
         try:
             target = 'ws://' + server + ':' + str(port)
+            print('please')
             mirror_device = ossia.OSCQueryDevice("Explorer for " + name, target, 5678)
             print('OK, device ready')
         except RuntimeError:
