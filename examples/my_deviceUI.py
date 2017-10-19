@@ -31,7 +31,7 @@ class MainWindow(QMainWindow):
         self.setStyleSheet(qss)
         self.setAutoFillBackground(True)
         # Draw an UI for my_device
-        self.panel = DeviceView(device=my_device, width='auto', height='auto')
+        self.panel = DeviceView(my_device, width='auto', height='auto')
         # assign this device to the mainwindow
         self.setCentralWidget(self.panel)
         self.move(0, 40)
