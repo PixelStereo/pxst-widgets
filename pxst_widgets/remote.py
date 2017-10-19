@@ -14,12 +14,8 @@ from PyQt5.QtGui import QFont
 
 class AbstractValue(QGroupBox):
     """
-    This must be sublassed
+    This must be sublassed with a value attribute set to a UI widget / object
     PyQt Widget that display label with parameter of the parameter
-    float / int : QSlider + QSpinbox
-    string : QLineEdit
-    bool : QCheckBox
-    todo : tuples : depend of the unit (color, spatial, etc…)
     """
     def __init__(self, parameter):
         super(AbstractValue, self).__init__()
@@ -37,16 +33,48 @@ class AbstractValue(QGroupBox):
 
     def setValue(self, value):
         """
-        Set the value of the GUI
+        The setValue method is used to set the UI to a value
         """
-        self.value.setValue(value)
+        self.value.blockSignals(True)
+        self.value.setUpdatesEnabled(False)
+        self.setUI(value)
+        self.value.blockSignals(False)
+        self.value.setUpdatesEnabled(True)
 
     def new_value(self, new_value):
         """
         check if a new value is there
         """
         if new_value != self.value.value():
-            self.parameter_update(new_value)
+            print('new_value_call')
+            # this is a new value, please set the UI
+            # block signal from new value
+            self.setValue(new_value)
+
+
+class IntUI(AbstractValue):
+    """
+    docstring for FloatUI
+    """
+    def __init__(self, parameter):
+        super(IntUI, self).__init__(parameter)
+        self.value = QSlider(Qt.Horizontal, None)
+        self.layout.addWidget(self.value)
+        if self.parameter.have_domain():
+            if self.parameter.domain.min:
+                range_min = self.parameter.domain.min*32768
+            else:
+                range_min = 0
+            if self.parameter.domain.max:
+                range_max = self.parameter.domain.max*32768
+            else:
+                range_max = 100
+        else:
+            self.value.setRange(0, 100)
+        self.value.valueChanged.connect(self.parameter.push_value)
+
+    def setUI(self, value):
+        self.value.setSliderPosition(value)
 
 
 class TextUI(AbstractValue):
@@ -111,24 +139,6 @@ class BoolUI(AbstractValue):
         if new_value != self.value.isChecked():
             self.parameter_update(new_value)
 
-class IntUI(AbstractValue):
-    """
-    docstring for FloatUI
-    """
-    def __init__(self, parameter):
-        super(IntUI, self).__init__(parameter)
-        self.value = QSlider(Qt.Horizontal, None)
-        self.layout.addWidget(self.value)
-        if self.parameter.have_domain():
-            self.value.setRange(self.parameter.domain.min, self.parameter.domain.max)
-        else:
-            self.value.setRange(0, 100)
-        self.parameter.add_callback(self.new_value)
-        self.value.valueChanged.connect(self.parameter.push_value)
-
-    def parameter_update(self, value):
-        self.value.setValue(value)
-
 
 class FloatUI(AbstractValue):
     """
@@ -139,8 +149,14 @@ class FloatUI(AbstractValue):
         self.value = QSlider(Qt.Horizontal, None)
         self.layout.addWidget(self.value)
         if self.parameter.have_domain():
-            range_min = self.parameter.domain.min*32768
-            range_max = self.parameter.domain.max*32768
+            if self.parameter.domain.min:
+                range_min = self.parameter.domain.min*32768
+            else:
+                range_min = 0
+            if self.parameter.domain.max:
+                range_max = self.parameter.domain.max*32768
+            else:
+                range_max = 100
             self.value.setRange(range_min, range_max)
         else:
             self.value.setRange(0, 32768)
