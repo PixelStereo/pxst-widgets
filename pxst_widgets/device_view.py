@@ -11,12 +11,16 @@ from pyossia import ossia
 from PyQt5.Qt import QTimer, QThread, pyqtSignal
 
 
-class Updater(QThread):
-    """docstring for Updater"""
+
+class DeviceUpdater(QThread):
+    """
+    Run a Device update queue
+    """
     param_update = pyqtSignal(ossia.Parameter, object)
     def __init__(self, parent):
-        super(Updater, self).__init__()
+        super(DeviceUpdater, self).__init__()
         self.msgq = parent.msgq
+        self.updater = None
         self.start()
 
     def __del__(self):
@@ -24,28 +28,10 @@ class Updater(QThread):
 
     def run(self):
         while True:
-            pass
             param_update = self.msgq.pop()
             if param_update != None:
-                print('-- something new --', param_update)
                 parameter, value = param_update
                 self.param_update.emit(parameter, value)
-
-
-class DeviceUpdater(QThread):
-    """docstring for DeviceUpdater"""
-    def __init__(self, parent):
-        super(DeviceUpdater, self).__init__()
-        self.msgq = parent.msgq
-        self.start()
-        self.updater = None
-
-    def run(self):
-        self.updater = Updater(self)
-
-    def __del__(self):
-        self.wait()
-
 
 class DeviceView(Panel):
     """
@@ -80,13 +66,19 @@ class DeviceView(Panel):
             remote = self.add_remote(param)
             self.view_db.setdefault(param, remote)
             self.msgq.register(param)
-            self.updater.updater.param_update.connect(self.parameter_update)
+            self.updater.param_update.connect(self.parameter_update)
             # REFLECT STATE
-            #remote.setValue(param.value)
+            remote.new_value(param.value)
             self.layout.addWidget(remote)
 
     def parameter_update(self, parameter, value):
-        self.view_db[parameter].new_value(value)
+        """
+        This function is called by the Libossia messageQueue
+        When a parameter which is registered to have a new value
+        """
+        # Check if the new value is different
+        if self.view_db[parameter].getUI() != value:
+            self.view_db[parameter].new_value(value)
 
     def resize(self, mode='auto'):
         """

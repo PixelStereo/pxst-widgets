@@ -31,6 +31,16 @@ class AbstractValue(QGroupBox):
         #self.setFixedSize(300, 45)
         self.setFixedWidth(300)
 
+    def mute(self, state):
+        """
+        mechanism used to avoid infinite loop when setting an UI
+        """
+        self.value.blockSignals(state)
+        if state:
+            self.value.setUpdatesEnabled(False)
+        else:
+            self.value.setUpdatesEnabled(True)
+
     def new_value(self, value):
         """
         check if a new value is there
@@ -38,11 +48,9 @@ class AbstractValue(QGroupBox):
         if value != self.getUI():
             # this is a new value, please set the UI
             # block signal from new value
-            self.value.blockSignals(True)
-            self.value.setUpdatesEnabled(False)
+            self.mute(True)
             self.setUI(value)
-            self.value.blockSignals(False)
-            self.value.setUpdatesEnabled(True)
+            self.mute(False)
 
 
 class IntUI(AbstractValue):
@@ -81,7 +89,6 @@ class FloatUI(AbstractValue):
         super(FloatUI, self).__init__(parameter)
         self.value = QSlider(Qt.Horizontal, None)
         self.layout.addWidget(self.value)
-        print('-----', self.parameter.have_domain())
         if self.parameter.have_domain():
             if self.parameter.min:
                 range_min = self.parameter.min*32768
@@ -113,6 +120,7 @@ class BoolUI(AbstractValue):
         super(BoolUI, self).__init__(parameter)
         self.value = QPushButton(str(self.parameter.value))
         self.value.setCheckable(True)
+        self.value.setFlat(True)
         self.value.toggled.connect(lambda value: self.value.setText(str(value)))
         self.layout.addWidget(self.value)
         if self.parameter.have_domain():
@@ -130,10 +138,16 @@ class BoolUI(AbstractValue):
 
 class TextUI(AbstractValue):
     """
-    This must be subclassed
+    This is a base class for Text Based UI
     """
     def __init__(self, parameter):
         super(TextUI, self).__init__(parameter)
+        self.value = QLineEdit()
+        self.value.setAttribute(Qt.WA_MacShowFocusRect, 0)
+        self.layout.addWidget(self.value)
+        if self.parameter.have_domain():
+            ### SOMETHING TO DO
+            print('TODO : domain of string based parameter : ' + str(self.parameter))
 
     def setUI(self, value):
         self.value.setText(str(value))
@@ -144,55 +158,45 @@ class TextUI(AbstractValue):
 
 class CharUI(TextUI):
     """
-    docstring for StringUI
+    The CharUI is a Text based UI for a single Ascii Character
     """
     def __init__(self, parameter):
         super(CharUI, self).__init__(parameter)
-        self.value = QLineEdit()
-        self.value.setAttribute(Qt.WA_MacShowFocusRect, 0)
-        self.layout.addWidget(self.value)
-        if self.parameter.have_domain():
-            ### SOMETHING TO DO
-            print('do something please with domain of ' + str(self.parameter))
         self.value.textEdited.connect(self.parameter.push_value)
 
 
 class ListUI(TextUI):
     """
-    docstring for StringUI
+    The List is a Text based UI that display a List as a string
     """
     def __init__(self, parameter):
         super(ListUI, self).__init__(parameter)
-        self.value = QLineEdit()
-        self.value.setAttribute(Qt.WA_MacShowFocusRect, 0)
-        self.layout.addWidget(self.value)
-        if self.parameter.have_domain():
-            ### SOMETHING TO DO
-            print('do something please with domain of ' + str(self.parameter))
         def parameter_push(value):
-            value = value.split(' ')
-            self.parameter.value = value
+            """
+            Dedicated fonction to format list from a QLine Edit to Ossia Pusher
+            """
+            # remove brackets (first and last characters of the string)
+            if len(value) >3:
+                value = value[1:-1]
+            # split the string in items
+            value = value.split(', ')
+            print(type(value), value)
+            for val in value:
+                print(type(val), val)
+            self.parameter.push_value(value)
         self.value.textEdited.connect(parameter_push)
 
-
-    def setUI(self, value):
-        self.value.setText(", ".join(value))
+        def setUI(self, value):
+            self.value.setText(value)
 
 
 class StringUI(TextUI):
     """
-    docstring for StringUI
+    The String is a Text based UI that display a string
     """
     def __init__(self, parameter):
         super(StringUI, self).__init__(parameter)
-        self.value = QLineEdit()
-        self.value.setAttribute(Qt.WA_MacShowFocusRect, 0)
-        self.layout.addWidget(self.value)
-        if self.parameter.have_domain():
-            ### SOMETHING TO DO
-            print('do something please with domain of ' + str(self.parameter))
         self.value.textEdited.connect(self.parameter.push_value)
-
 
 
 class Vec2fUI(AbstractValue):
@@ -220,31 +224,32 @@ class Vec2fUI(AbstractValue):
         if self.parameter.have_domain():
             ### SOMETHING TO DO
             print('do something please with domain of ' + str(self.parameter))
-        self.parameter.add_callback(self.new_value)
 
-    def parameter_update(self, value):
-        value1 = value[0]
-        value2 = value[1]
-        self.new_value([value1, value2])
-
-    def setValue(self, value):
+    def setUI(self, value):
         """
         Set the value of the GUI
         """
-        self.value1.setValue(value[0])
-        self.value2.setValue(value[1])
+        self.value1.setValue(value[0]*32768)
+        self.value2.setValue(value[1]*32768)
 
-    def new_value(self, new_value):
+    def getUI(self):
         """
-        check if a new value is different than current UI value
-        if yes, it will update it
+        Set the value of the GUI
         """
-        new_value1 = new_value[0]
-        new_value2 = new_value[1]
-        if new_value1 != self.value1.value():
-            self.value1.setValue(int(new_value1*32768))
-        if new_value2 != self.value2.value():
-            self.value2.setValue(int(new_value2*32768))
+        return [self.value1.value()/32768, self.value2.value()/32768]
+
+    def mute(self, state):
+        """
+        mechanism used to avoid infinite loop when setting an UI
+        """
+        self.value1.blockSignals(state)
+        self.value2.blockSignals(state)
+        if state:
+            self.value1.setUpdatesEnabled(False)
+            self.value2.setUpdatesEnabled(False)
+        else:
+            self.value1.setUpdatesEnabled(True)
+            self.value2.setUpdatesEnabled(True)
 
 
 class Vec3fUI(AbstractValue):
@@ -279,40 +284,41 @@ class Vec3fUI(AbstractValue):
         if self.parameter.have_domain():
             ### SOMETHING TO DO
             print('do something please with domain of ' + str(self.parameter))
-        self.parameter.add_callback(self.new_value)
 
-    def parameter_update(self, value):
-        value1 = int(value[0]*32768)
-        value2 = int(value[1]*32768)
-        value3 = int(value[2]*32768)
-        self.setValue([value1, value2, value3])
-
-    def setValue(self, value):
+    def setUI(self, value):
         """
         Set the value of the GUI
         """
-        self.value1.setValue(int(value[0]*32768))
-        self.value2.setValue(int(value[1]*32768))
-        self.value3.setValue(int(value[2]*32768))
+        self.value1.setValue(value[0]*32768)
+        self.value2.setValue(value[1]*32768)
+        self.value3.setValue(value[2]*32768)
 
-    def new_value(self, new_value):
+    def getUI(self):
         """
-        check if a new value is there
+        Set the value of the GUI
         """
-        new_value1 = int(new_value[0]*32768)
-        new_value2 = int(new_value[1]*32768)
-        new_value3 = int(new_value[2]*32768)
-        if new_value1 != self.value1.value():
-            self.value1.setValue(new_value2)
-        if new_value2 != self.value2.value():
-            self.value2.setValue(new_value2)
-        if new_value3 != self.value3.value():
-            self.value3.setValue(new_value3)
+        return [self.value1.value()/32768, self.value2.value()/32768, self.value3.value()/32768]
+
+    def mute(self, state):
+        """
+        mechanism used to avoid infinite loop when setting an UI
+        """
+        self.value1.blockSignals(state)
+        self.value2.blockSignals(state)
+        self.value3.blockSignals(state)
+        if state:
+            self.value1.setUpdatesEnabled(False)
+            self.value2.setUpdatesEnabled(False)
+            self.value3.setUpdatesEnabled(False)
+        else:
+            self.value1.setUpdatesEnabled(True)
+            self.value2.setUpdatesEnabled(True)
+            self.value3.setUpdatesEnabled(True)
 
 
 class Vec4fUI(AbstractValue):
     """
-    docstring for Vec3f
+    docstring for Vec4f
     """
     def __init__(self, parameter):
         super(Vec4fUI, self).__init__(parameter)
@@ -336,9 +342,8 @@ class Vec4fUI(AbstractValue):
             value_1 = self.value1.value()/32768
             value_2 = self.value2.value()/32768
             value_3 = self.value3.value()/32768
-            value_4 = self.value4.value()/32768
+            value_4 = self.value3.value()/32768
             self.parameter.value = [value_1, value_2, value_3, value_4]
-        # TODO : separate in 4 parameter1_push etc…
         self.value1.valueChanged.connect(parameter_push)
         self.value2.valueChanged.connect(parameter_push)
         self.value3.valueChanged.connect(parameter_push)
@@ -350,32 +355,37 @@ class Vec4fUI(AbstractValue):
         if self.parameter.have_domain():
             ### SOMETHING TO DO
             print('do something please with domain of ' + str(self.parameter))
-        self.parameter.add_callback(self.new_value)
 
-    def setValue(self, value):
+    def setUI(self, value):
         """
         Set the value of the GUI
         """
-        self.value1.setValue(int(value[0]*32768))
-        self.value2.setValue(int(value[1]*32768))
-        self.value3.setValue(int(value[2]*32768))
-        self.value4.setValue(int(value[3]*32768))
+        self.value1.setValue(value[0]*32768)
+        self.value2.setValue(value[1]*32768)
+        self.value3.setValue(value[2]*32768)
+        self.value4.setValue(value[3]*32768)
 
-    def new_value(self, new_value):
+    def getUI(self):
         """
-        check if a new value is there
+        Set the value of the GUI
         """
-        new_value1 = int(new_value[0]*32768)
-        new_value2 = int(new_value[1]*32768)
-        new_value3 = int(new_value[2]*32768)
-        new_value4 = int(new_value[3]*32768)
-        if new_value1 != self.value1.value():
-            self.value1.setValue(new_value1)
-        if new_value2 != self.value2.value():
-            self.value2.setValue(new_value2)
-        if new_value3 != self.value3.value():
-            self.value3.setValue(new_value3)
-        if new_value4 != self.value4.value():
-            self.value4.setValue(new_value4)
+        return [self.value1.value()/32768, self.value2.value()/32768, self.value3.value()/32768, self.value4.value()/32768]
 
-
+    def mute(self, state):
+        """
+        mechanism used to avoid infinite loop when setting an UI
+        """
+        self.value1.blockSignals(state)
+        self.value2.blockSignals(state)
+        self.value3.blockSignals(state)
+        self.value4.blockSignals(state)
+        if state:
+            self.value1.setUpdatesEnabled(False)
+            self.value2.setUpdatesEnabled(False)
+            self.value3.setUpdatesEnabled(False)
+            self.value4.setUpdatesEnabled(False)
+        else:
+            self.value1.setUpdatesEnabled(True)
+            self.value2.setUpdatesEnabled(True)
+            self.value3.setUpdatesEnabled(True)
+            self.value4.setUpdatesEnabled(True)
