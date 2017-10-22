@@ -62,14 +62,7 @@ class IntUI(AbstractValue):
         self.value = QSlider(Qt.Horizontal, None)
         self.layout.addWidget(self.value)
         if self.parameter.have_domain():
-            if self.parameter.domain.min:
-                range_min = self.parameter.domain.min*32768
-            else:
-                range_min = 0
-            if self.parameter.domain.max:
-                range_max = self.parameter.domain.max*32768
-            else:
-                range_max = 100
+            self.value.setRange(self.parameter.domain.min, self.parameter.domain.max)
         else:
             self.value.setRange(0, 100)
         self.value.valueChanged.connect(self.parameter.push_value)
@@ -90,12 +83,12 @@ class FloatUI(AbstractValue):
         self.value = QSlider(Qt.Horizontal, None)
         self.layout.addWidget(self.value)
         if self.parameter.have_domain():
-            if self.parameter.min:
-                range_min = self.parameter.min*32768
+            if self.parameter.domain.min:
+                range_min = self.parameter.domain.min*32768
             else:
                 range_min = 0
-            if self.parameter.max:
-                range_max = self.parameter.max*32768
+            if self.parameter.domain.max:
+                range_max = self.parameter.domain.max*32768
             else:
                 range_max = 32768
             self.value.setRange(range_min, range_max)
@@ -123,9 +116,6 @@ class BoolUI(AbstractValue):
         self.value.setFlat(True)
         self.value.toggled.connect(lambda value: self.value.setText(str(value)))
         self.layout.addWidget(self.value)
-        if self.parameter.have_domain():
-            ### SOMETHING TO DO
-            print('do something please with domain of ' + str(self.parameter))
         self.value.toggled.connect(self.parameter.push_value)
 
     def setUI(self, value):
@@ -222,8 +212,7 @@ class Vec2fUI(AbstractValue):
         self.layout.addWidget(self.value1)
         self.layout.addWidget(self.value2)
         if self.parameter.have_domain():
-            ### SOMETHING TO DO
-            print('do something please with domain of ' + str(self.parameter))
+            print(self.parameter.domain.min, self.parameter.domain.min)
 
     def setUI(self, value):
         """
@@ -281,9 +270,6 @@ class Vec3fUI(AbstractValue):
         self.layout.addWidget(self.value1)
         self.layout.addWidget(self.value2)
         self.layout.addWidget(self.value3)
-        if self.parameter.have_domain():
-            ### SOMETHING TO DO
-            print('do something please with domain of ' + str(self.parameter))
 
     def setUI(self, value):
         """
@@ -342,7 +328,7 @@ class Vec4fUI(AbstractValue):
             value_1 = self.value1.value()/32768
             value_2 = self.value2.value()/32768
             value_3 = self.value3.value()/32768
-            value_4 = self.value3.value()/32768
+            value_4 = self.value4.value()/32768
             self.parameter.value = [value_1, value_2, value_3, value_4]
         self.value1.valueChanged.connect(parameter_push)
         self.value2.valueChanged.connect(parameter_push)
@@ -352,9 +338,6 @@ class Vec4fUI(AbstractValue):
         self.layout.addWidget(self.value2)
         self.layout.addWidget(self.value3)
         self.layout.addWidget(self.value4)
-        if self.parameter.have_domain():
-            ### SOMETHING TO DO
-            print('do something please with domain of ' + str(self.parameter))
 
     def setUI(self, value):
         """
