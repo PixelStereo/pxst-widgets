@@ -86,4 +86,4 @@ class DeviceView(Panel):
         """
         if mode == 'auto':
             self.setFixedHeight(len(self.device.root_node.get_parameters()) * 69)
-            self.setFixedWidth(305)
+            self.setFixedWidth(500)

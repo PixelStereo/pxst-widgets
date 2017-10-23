@@ -29,7 +29,7 @@ class AbstractValue(QGroupBox):
         self.layout.addWidget(self.label)
         self.setLayout(self.layout)
         #self.setFixedSize(300, 45)
-        self.setFixedWidth(300)
+        #self.setFixedWidth(300)
 
     def mute(self, state):
         """
@@ -81,7 +81,10 @@ class IntUI(AbstractValue):
         self.value = QSlider(Qt.Horizontal, None)
         self.layout.addWidget(self.value)
         if self.parameter.have_domain():
-            self.value.setRange(self.parameter.domain.min, self.parameter.domain.max)
+            if self.parameter.domain.min and self.parameter.domain.max:
+                self.value.setRange(self.parameter.domain.min, self.parameter.domain.max)
+            else:
+                self.value.setRange(0, 100)
         else:
             self.value.setRange(0, 100)
         self.value.valueChanged.connect(self.parameter.push_value)
