@@ -8,8 +8,8 @@ A Panel is a Group of widget designed to add Parameter remotes
 from PyQt5.QtWidgets import QGroupBox, QVBoxLayout
 
 from pyossia import ossia
-from pxst_widgets.remote import FloatUI, BoolUI, IntUI, StringUI, Vec2fUI, Vec3fUI, Vec4fUI, ListUI, CharUI
-
+from pxst_widgets.remote import Vec3fUI, Vec4fUI, ListUI, CharUI, ImpulseUI
+from pxst_widgets.remote import FloatUI, BoolUI, IntUI, StringUI, Vec2fUI
 
 class Panel(QGroupBox):
     """
@@ -46,6 +46,8 @@ class Panel(QGroupBox):
             remote = ListUI(parameter)
         elif parameter.value_type == ossia.ValueType.Char:
             remote = CharUI(parameter)
+        elif parameter.value_type == ossia.ValueType.Impulse:
+            remote = ImpulseUI(parameter)
         else:
             print('ERROR 999', parameter.value_type)
             remote = StringUI(parameter)

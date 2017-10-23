@@ -53,6 +53,25 @@ class AbstractValue(QGroupBox):
             self.mute(False)
 
 
+class ImpulseUI(AbstractValue):
+    """
+    Widget for an Impulse Parameter
+    """
+    def __init__(self, parameter):
+        super(ImpulseUI, self).__init__(parameter)
+        self.value = QPushButton(str(parameter.node))
+        self.value.setCheckable(False)
+        self.value.setFlat(True)
+        self.layout.addWidget(self.value)
+        self.value.toggled.connect(self.parameter.push_value)
+
+    def setUI(self, value):
+        self.value.setChecked(False)
+
+    def getUI(self):
+        return False
+
+
 class IntUI(AbstractValue):
     """
     docstring for FloatUI
