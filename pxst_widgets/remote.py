@@ -8,7 +8,7 @@ it will automagically display the coreespondant UI for the address
 """
 
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QPushButton, QGroupBox, QLabel, QHBoxLayout, QSlider, QDial, QLineEdit
+from PyQt5.QtWidgets import QPushButton, QGroupBox, QLabel, QGridLayout, QSlider, QDial, QLineEdit
 from PyQt5.QtGui import QFont
 from pyossia import ossia
 
@@ -23,17 +23,21 @@ class AbstractValueUI(QGroupBox):
         super(AbstractValueUI, self).__init__()
         self.parameter = parameter
         # Create parameter layout
-        self.layout = QHBoxLayout()
+        self.layout = QGridLayout()
         # create a button to reset the parameter to its default_value
         self.reset_ui = QPushButton('reset')
-        self.reset_ui.setFont(QFont('Helvetica', 9, QFont.Light))
-        self.reset_ui.toggled.connect(self.parameter.reset)
-        self.layout.addWidget(self.reset_ui)
+        self.reset_ui.setFixedSize(100, 20)
+        #self.reset_ui.setFont(QFont('Helvetica', 9, QFont.Light))
+        #self.reset_ui.toggled.connect(self.parameter.reset)
+        self.reset_ui.setCheckable(False)
+        self.reset_ui.setFlat(True)
+        self.reset_ui.clicked.connect(self.parameter.reset)
+        self.layout.addWidget(self.reset_ui, 0, 0)
         # Create label with parameter
         self.label = QLabel(str(self.parameter.node))
         self.label.setFixedSize(100, 20)
         self.label.setFont(QFont('Helvetica', 12, QFont.Light))
-        self.layout.addWidget(self.label)
+        self.layout.addWidget(self.label, 0, 1)
         self.setLayout(self.layout)
         #self.setFixedSize(300, 45)
         self.setFixedWidth(300)

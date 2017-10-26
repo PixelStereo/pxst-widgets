@@ -8,7 +8,9 @@ It is designed to display instruments through remotes
 
 from pxst_widgets.panel import Panel
 from pyossia import ossia
-from PyQt5.Qt import QTimer, QThread, pyqtSignal
+from PyQt5.QtCore import Qt
+from PyQt5.Qt import QTimer, QThread, pyqtSignal, QPalette
+from PyQt5.QtWidgets import QGroupBox, QGridLayout
 from pxst_widgets.inspector import ParameterView
 
 
@@ -45,10 +47,15 @@ class DeviceView(Panel):
         super(DeviceView, self).__init__()
         # create a layout for this groupbox (to attach widgets on)
         self.device = device
+        self.selected = None
         self.view_db = {}
         self.updater = None
         self.inspector = ParameterView(None)
-        self.layout.addWidget(self.inspector, 1, 1)
+        self.layout.addWidget(self.inspector, 0, 0)
+        self.parameters = QGroupBox('parameters available')
+        self.parameters_layout = QGridLayout()
+        self.parameters.setLayout(self.parameters_layout)
+        self.layout.addWidget(self.parameters, 1, 0)
         self.setup(kwargs)
         self.resize()
 
@@ -67,6 +74,13 @@ class DeviceView(Panel):
             # create the UI for this parameter
             remote = self.add_remote(param)
             remote.selection_update.connect(self.selection_changed)
+            remote.setStyleSheet("""
+               QGroupBox 
+               { 
+                   border:1px solid rgb(216, 216, 216); 
+               }
+               """
+            )
             # register this view in the view list
             self.view_db.setdefault(param, remote)
             # request for signal updates
@@ -76,14 +90,33 @@ class DeviceView(Panel):
             # update current state
             remote.new_value(param.value)
             # add the remote to the layout
-            self.layout.addWidget(remote)
+            self.parameters_layout.addWidget(remote)
 
     def selection_changed(self, parameter):
         """
         a parameter has been selected by clicking inside its groupbox
         """
+        # Release last selection
+        if self.selected:
+            ui = self.view_db[self.selected]
+            ui.setStyleSheet("""
+                QGroupBox 
+                { 
+                    border:1px solid rgb(216, 216, 216); 
+                }
+                """
+            )
         self.inspector.inspect(parameter)
-
+        ui = self.view_db[parameter]
+        self.selected = parameter
+        ui = self.view_db[parameter]
+        ui.setStyleSheet("""
+           QGroupBox 
+           { 
+               border:1px solid rgb(0, 146, 207); 
+           }
+           """
+        )
 
 
     def parameter_update(self, parameter, value):
@@ -100,5 +133,6 @@ class DeviceView(Panel):
         resize the DeviceView from its parameter size
         """
         if mode == 'auto':
-            self.setFixedHeight(len(self.device.root_node.get_parameters()) * 69)
+            pass
+            #self.setFixedHeight(len(self.device.root_node.get_parameters()) * 150)
             #self.setFixedWidth(600)
