@@ -77,7 +77,7 @@ class MainWindow(QMainWindow):
         self.panel = DeviceView(device=mirror_device, width='auto', height='auto')
         # assign this device to the mainwindow
         self.setCentralWidget(self.panel)
-        self.setFixedSize(self.centralWidget().width(), self.centralWidget().height())
+        #self.setFixedSize(self.centralWidget().width(), self.centralWidget().height())
 
     def remove_device(self, name):
         print('BYE BYE ' + name)

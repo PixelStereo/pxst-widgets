@@ -27,8 +27,6 @@ class AbstractValueUI(QGroupBox):
         # create a button to reset the parameter to its default_value
         self.reset_ui = QPushButton('reset')
         self.reset_ui.setFixedSize(100, 20)
-        #self.reset_ui.setFont(QFont('Helvetica', 9, QFont.Light))
-        #self.reset_ui.toggled.connect(self.parameter.reset)
         self.reset_ui.setCheckable(False)
         self.reset_ui.setFlat(True)
         self.reset_ui.clicked.connect(self.parameter.reset)

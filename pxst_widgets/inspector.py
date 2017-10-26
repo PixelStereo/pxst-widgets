@@ -70,9 +70,16 @@ class ParameterView(QGroupBox):
         self.repetition_filter = QLineEdit()
         self.layout.addWidget(self.repetition_filter, 7, 1)
 
+        # critical
+        self.critical_label = QLabel('critical')
+        self.layout.addWidget(self.critical_label, 8, 0)
+        self.critical = QLineEdit()
+        self.layout.addWidget(self.critical, 8, 1)
+
 
     def inspect(self, parameter):
         self.parameter = parameter
+        print(dir(parameter.node))
         # address
         self.setTitle(str(parameter.node))
         # description
@@ -95,3 +102,6 @@ class ParameterView(QGroupBox):
 
         # unit
         self.unit.setText(str(self.parameter.unit))
+
+        # critical
+        self.unit.setText(str(self.parameter.node.critical))
