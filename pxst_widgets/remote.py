@@ -7,29 +7,42 @@ TODO : create a generic panel with an address attribute
 it will automagically display the coreespondant UI for the address
 """
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QPushButton, QGroupBox, QLabel, QHBoxLayout, QSlider, QDial, QLineEdit
 from PyQt5.QtGui import QFont
+from pyossia import ossia
 
 
-class AbstractValue(QGroupBox):
+class AbstractValueUI(QGroupBox):
     """
     This must be sublassed with a value attribute set to a UI widget / object
     PyQt Widget that display label with parameter of the parameter
     """
+    selection_update = pyqtSignal(ossia.Parameter)
     def __init__(self, parameter):
-        super(AbstractValue, self).__init__()
+        super(AbstractValueUI, self).__init__()
         self.parameter = parameter
+        # Create parameter layout
+        self.layout = QHBoxLayout()
+        # create a button to reset the parameter to its default_value
+        self.reset_ui = QPushButton('reset')
+        self.reset_ui.setFont(QFont('Helvetica', 9, QFont.Light))
+        self.reset_ui.toggled.connect(self.parameter.reset)
+        self.layout.addWidget(self.reset_ui)
         # Create label with parameter
         self.label = QLabel(str(self.parameter.node))
         self.label.setFixedSize(100, 20)
         self.label.setFont(QFont('Helvetica', 12, QFont.Light))
-        # Create parameter layout
-        self.layout = QHBoxLayout()
         self.layout.addWidget(self.label)
         self.setLayout(self.layout)
         #self.setFixedSize(300, 45)
-        #self.setFixedWidth(300)
+        self.setFixedWidth(300)
+
+    def mousePressEvent(self, event):
+        """
+        This is used to know if the remote UI has been Clicked
+        """
+        self.selection_update.emit(self.parameter)
 
     def mute(self, state):
         """
@@ -53,7 +66,7 @@ class AbstractValue(QGroupBox):
             self.mute(False)
 
 
-class ImpulseUI(AbstractValue):
+class ImpulseUI(AbstractValueUI):
     """
     Widget for an Impulse Parameter
     """
@@ -72,7 +85,7 @@ class ImpulseUI(AbstractValue):
         return False
 
 
-class IntUI(AbstractValue):
+class IntUI(AbstractValueUI):
     """
     docstring for FloatUI
     """
@@ -96,7 +109,7 @@ class IntUI(AbstractValue):
         return self.value.sliderPosition()
 
 
-class FloatUI(AbstractValue):
+class FloatUI(AbstractValueUI):
     """
     docstring for FloatUI
     """
@@ -127,7 +140,7 @@ class FloatUI(AbstractValue):
     def getUI(self):
         return self.value.sliderPosition()/32768
 
-class BoolUI(AbstractValue):
+class BoolUI(AbstractValueUI):
     """
     docstring for BoolUI
     """
@@ -148,7 +161,7 @@ class BoolUI(AbstractValue):
         return self.value.isChecked()
 
 
-class TextUI(AbstractValue):
+class TextUI(AbstractValueUI):
     """
     This is a base class for Text Based UI
     """
@@ -211,7 +224,7 @@ class StringUI(TextUI):
         self.value.textEdited.connect(self.parameter.push_value)
 
 
-class Vec2fUI(AbstractValue):
+class Vec2fUI(AbstractValueUI):
     """
     docstring for Vec3f
     """
@@ -263,7 +276,7 @@ class Vec2fUI(AbstractValue):
             self.value2.setUpdatesEnabled(True)
 
 
-class Vec3fUI(AbstractValue):
+class Vec3fUI(AbstractValueUI):
     """
     docstring for Vec3f
     """
@@ -324,7 +337,7 @@ class Vec3fUI(AbstractValue):
             self.value3.setUpdatesEnabled(True)
 
 
-class Vec4fUI(AbstractValue):
+class Vec4fUI(AbstractValueUI):
     """
     docstring for Vec4f
     """

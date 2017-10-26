@@ -5,7 +5,7 @@
 A Panel is a Group of widget designed to add Parameter remotes
 """
 
-from PyQt5.QtWidgets import QGroupBox, QVBoxLayout
+from PyQt5.QtWidgets import QGroupBox, QGridLayout
 
 from pyossia import ossia
 from pxst_widgets.remote import Vec3fUI, Vec4fUI, ListUI, CharUI, ImpulseUI
@@ -18,7 +18,7 @@ class Panel(QGroupBox):
     def __init__(self, *args, **kwargs):
         super(Panel, self).__init__()
         # create a layout for this groupbox (to attach widgets on)
-        self.layout = QVBoxLayout()
+        self.layout = QGridLayout()
         self.layout.setSpacing(0)
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.device = None
@@ -51,5 +51,5 @@ class Panel(QGroupBox):
         else:
             print('ERROR 999', parameter.value_type)
             remote = StringUI(parameter)
-        self.layout.addWidget(remote)
+        self.layout.addWidget(remote, 1, 1)
         return remote

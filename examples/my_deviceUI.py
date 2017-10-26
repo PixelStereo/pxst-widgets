@@ -6,8 +6,7 @@ This file is an example of a PyQt5 / OSCQuery Device
 """
 
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow
-
+from PyQt5.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QWidget
 from pxst_widgets.device_view import DeviceView
 
 # create the OSSIA Device and some parameters
@@ -16,7 +15,7 @@ from pyossia import *
 my_device = ossia.LocalDevice('PyOssia Test Device')
 my_device.expose(protocol='oscquery', listening_port=3456, sending_port=5678, logger=True)
 #my_device.expose(protocol='osc', listening_port=11111, sending_port=22222, logger=False)
-my_int = my_device.add_param('test/numeric/int', value_type='int', default_value=66, domain=[-100, 100])
+my_int = my_device.add_param('test/numeric/int', value_type='int', default_value=66, domain=[-100, 100], description='an integer')
 my_float = my_device.add_param('test/numeric/float', value_type='float', default_value=0.123456, domain=[-2.1, 2.2])
 my_bool = my_device.add_param('test/special/bool', value_type='bool', default_value=True, repetitions_filter=True)
 my_string = my_device.add_param('test/string', value_type='string', default_value='Hello world !', domain=['once', 'loop'])
@@ -41,11 +40,15 @@ class MainWindow(QMainWindow):
         self.setAutoFillBackground(True)
         # Draw an UI for my_device
         self.panel = DeviceView(my_device, width='auto', height='auto')
+        self.layout = QHBoxLayout()
+        self.layout.addWidget(self.panel)
+        main_box = QWidget()
+        main_box.setLayout(self.layout)
         # assign this device to the mainwindow
-        self.setCentralWidget(self.panel)
+        self.setCentralWidget(main_box)
         self.move(0, 40)
         #self.setMinimumSize(self.panel.width() + 10, self.panel.height() + 10)
-        self.setFixedSize(self.centralWidget().width(), self.centralWidget().height())
+        #self.setMinimumSize(self.centralWidget().width(), self.centralWidget().height())
 
 if __name__ == "__main__":
     # this is for python2 only

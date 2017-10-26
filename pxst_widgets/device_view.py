@@ -9,7 +9,7 @@ It is designed to display instruments through remotes
 from pxst_widgets.panel import Panel
 from pyossia import ossia
 from PyQt5.Qt import QTimer, QThread, pyqtSignal
-
+from pxst_widgets.inspector import ParameterView
 
 
 class DeviceUpdater(QThread):
@@ -47,6 +47,8 @@ class DeviceView(Panel):
         self.device = device
         self.view_db = {}
         self.updater = None
+        self.inspector = ParameterView(None)
+        self.layout.addWidget(self.inspector, 1, 1)
         self.setup(kwargs)
         self.resize()
 
@@ -61,15 +63,28 @@ class DeviceView(Panel):
             self.setTitle(self.device.name)
         except:
             self.setTitle(str(self.device))
-        #self.setTitle(str(self.device.get_nodes()[0]))
         for param in self.device.root_node.get_parameters():
+            # create the UI for this parameter
             remote = self.add_remote(param)
+            remote.selection_update.connect(self.selection_changed)
+            # register this view in the view list
             self.view_db.setdefault(param, remote)
+            # request for signal updates
             self.msgq.register(param)
+            # connect the updater thread to this remote
             self.updater.param_update.connect(self.parameter_update)
-            # REFLECT STATE
+            # update current state
             remote.new_value(param.value)
+            # add the remote to the layout
             self.layout.addWidget(remote)
+
+    def selection_changed(self, parameter):
+        """
+        a parameter has been selected by clicking inside its groupbox
+        """
+        self.inspector.inspect(parameter)
+
+
 
     def parameter_update(self, parameter, value):
         """
@@ -86,4 +101,4 @@ class DeviceView(Panel):
         """
         if mode == 'auto':
             self.setFixedHeight(len(self.device.root_node.get_parameters()) * 69)
-            self.setFixedWidth(500)
+            #self.setFixedWidth(600)
