@@ -22,6 +22,8 @@ class ParameterView(QGroupBox):
         if parameter:
             self.parameter = parameter
             self.inspect(parameter)
+        else:
+            self.setTitle('select a parameter to inspect')
 
     def setup(self):
 
@@ -50,17 +52,23 @@ class ParameterView(QGroupBox):
         self.domain = QLineEdit()
         self.layout.addWidget(self.domain, 4, 1)
 
+        # unit
+        self.unit_label = QLabel('unit')
+        self.layout.addWidget(self.unit_label, 5, 0)
+        self.unit = QLineEdit()
+        self.layout.addWidget(self.unit, 5, 1)
+
         # boudning_mode
         self.bounding_mode_label = QLabel('bounding_mode')
-        self.layout.addWidget(self.bounding_mode_label, 5, 0)
+        self.layout.addWidget(self.bounding_mode_label, 6, 0)
         self.bounding_mode = QLineEdit()
-        self.layout.addWidget(self.bounding_mode, 5, 1)
+        self.layout.addWidget(self.bounding_mode, 6, 1)
 
         # repetition_filter
         self.repetition_filter_label = QLabel('repetition_filter')
-        self.layout.addWidget(self.repetition_filter_label, 6, 0)
+        self.layout.addWidget(self.repetition_filter_label, 7, 0)
         self.repetition_filter = QLineEdit()
-        self.layout.addWidget(self.repetition_filter, 6, 1)
+        self.layout.addWidget(self.repetition_filter, 7, 1)
 
 
     def inspect(self, parameter):
@@ -84,3 +92,6 @@ class ParameterView(QGroupBox):
 
         # repetition_filter
         self.repetition_filter.setText(str(self.parameter.repetition_filter))
+
+        # unit
+        self.unit.setText(str(self.parameter.unit))

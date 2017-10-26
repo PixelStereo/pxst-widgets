@@ -23,7 +23,7 @@ my_list = my_device.add_param('test/list', value_type='list', default_value=[441
 my_char = my_device.add_param('test/special/char', value_type='char', default_value=chr(97))
 my_vec2f = my_device.add_param('test/list/vec2f', value_type='vec2f', default_value=[0.5, 0.5], domain=[[-0.6, 1.2], [-0.3, 0.6]])
 my_vec3f = my_device.add_param('test/list/vec3f', value_type='vec3f', default_value=[-960, -270, 180],  domain=[0, 360])
-my_vec4f = my_device.add_param('test/list/vec4f', value_type='vec4f', default_value=[0, 0.57, 0.81, 0.7],  domain=[0, 1])
+my_vec4f = my_device.add_param('test/list/vec4f', value_type='vec4f', unit='color.rgbaui = self.view_db[parameter]', default_value=[0, 0.57, 0.81, 0.7],  domain=[0, 1])
 
 my_device.root_node.init()
 
