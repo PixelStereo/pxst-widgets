@@ -32,12 +32,12 @@ class AbstractValueUI(QGroupBox):
         self.reset_ui.setCheckable(False)
         self.reset_ui.setFlat(True)
         self.reset_ui.clicked.connect(self.parameter.reset)
-        self.layout.addWidget(self.reset_ui, 0, 0)
+        self.layout.addWidget(self.reset_ui, 0, 0, 1, 3)
         # Create label with parameter
         self.label = QLabel(str(self.parameter.node))
         self.label.setFixedSize(100, 20)
         self.label.setFont(QFont('Helvetica', 12, QFont.Light))
-        self.layout.addWidget(self.label, 0, 1)
+        self.layout.addWidget(self.label, 0, 4, 1, 3)
         self.setLayout(self.layout)
         #self.setFixedSize(300, 45)
         self.setFixedWidth(300)
@@ -306,9 +306,9 @@ class Vec3fUI(AbstractValueUI):
         self.value1.valueChanged.connect(parameter_push)
         self.value2.valueChanged.connect(parameter_push)
         self.value3.valueChanged.connect(parameter_push)
-        self.layout.addWidget(self.value1)
-        self.layout.addWidget(self.value2)
-        self.layout.addWidget(self.value3)
+        self.layout.addWidget(self.value1, 1, 0)
+        self.layout.addWidget(self.value2, 1, 1)
+        self.layout.addWidget(self.value3, 1, 2)
 
     def setUI(self, value):
         """
@@ -373,10 +373,10 @@ class Vec4fUI(AbstractValueUI):
         self.value2.valueChanged.connect(parameter_push)
         self.value3.valueChanged.connect(parameter_push)
         self.value4.valueChanged.connect(parameter_push)
-        self.layout.addWidget(self.value1)
-        self.layout.addWidget(self.value2)
-        self.layout.addWidget(self.value3)
-        self.layout.addWidget(self.value4)
+        self.layout.addWidget(self.value1, 1, 0, 1, 2)
+        self.layout.addWidget(self.value2, 1, 4, 1, 2)
+        self.layout.addWidget(self.value3, 1, 8, 1, 2)
+        self.layout.addWidget(self.value4, 1, 12, 1, 2)
 
     def setUI(self, value):
         """
