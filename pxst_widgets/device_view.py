@@ -57,7 +57,6 @@ class DeviceView(Panel):
         self.parameters.setLayout(self.parameters_layout)
         self.layout.addWidget(self.parameters, 1, 0)
         self.setup(kwargs)
-        self.resize()
 
     def setup(self, kwargs):
         """
@@ -127,12 +126,3 @@ class DeviceView(Panel):
         # Check if the new value is different
         if self.view_db[parameter].getUI() != value:
             self.view_db[parameter].new_value(value)
-
-    def resize(self, mode='auto'):
-        """
-        resize the DeviceView from its parameter size
-        """
-        if mode == 'auto':
-            pass
-            #self.setFixedHeight(len(self.device.root_node.get_parameters()) * 150)
-            #self.setFixedWidth(600)

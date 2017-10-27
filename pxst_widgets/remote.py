@@ -45,6 +45,7 @@ class AbstractValueUI(QGroupBox):
         This is used to know if the remote UI has been Clicked
         """
         self.selection_update.emit(self.parameter)
+        event.accept()
 
     def mute(self, state):
         """
@@ -94,7 +95,7 @@ class IntUI(AbstractValueUI):
     def __init__(self, parameter):
         super(IntUI, self).__init__(parameter)
         self.value = QSlider(Qt.Horizontal, None)
-        self.layout.addWidget(self.value)
+        self.layout.addWidget(self.value, 1, 0, 1, 8)
         if self.parameter.have_domain():
             if self.parameter.domain.min and self.parameter.domain.max:
                 self.value.setRange(self.parameter.domain.min, self.parameter.domain.max)
@@ -118,7 +119,7 @@ class FloatUI(AbstractValueUI):
     def __init__(self, parameter):
         super(FloatUI, self).__init__(parameter)
         self.value = QSlider(Qt.Horizontal, None)
-        self.layout.addWidget(self.value)
+        self.layout.addWidget(self.value, 1, 0, 1, 8)
         if self.parameter.have_domain():
             if self.parameter.domain.min:
                 range_min = self.parameter.domain.min*32768
@@ -152,7 +153,7 @@ class BoolUI(AbstractValueUI):
         self.value.setCheckable(True)
         self.value.setFlat(True)
         self.value.toggled.connect(lambda value: self.value.setText(str(value)))
-        self.layout.addWidget(self.value)
+        self.layout.addWidget(self.value, 1, 0, 1, 8)
         self.value.toggled.connect(self.parameter.push_value)
 
     def setUI(self, value):
@@ -171,7 +172,7 @@ class TextUI(AbstractValueUI):
         super(TextUI, self).__init__(parameter)
         self.value = QLineEdit()
         self.value.setAttribute(Qt.WA_MacShowFocusRect, 0)
-        self.layout.addWidget(self.value)
+        self.layout.addWidget(self.value, 1, 0, 1, 8)
         if self.parameter.have_domain():
             ### SOMETHING TO DO
             print('TODO : domain of string based parameter : ' + str(self.parameter))
@@ -246,8 +247,8 @@ class Vec2fUI(AbstractValueUI):
             self.parameter.value = [value_1, value_2]
         self.value1.valueChanged.connect(parameter_push)
         self.value2.valueChanged.connect(parameter_push)
-        self.layout.addWidget(self.value1)
-        self.layout.addWidget(self.value2)
+        self.layout.addWidget(self.value1, 1, 0, 1, 1)
+        self.layout.addWidget(self.value2, 1, 1, 1, 1)
         if self.parameter.have_domain():
             print(self.parameter.domain.min, self.parameter.domain.min)
 
@@ -304,9 +305,9 @@ class Vec3fUI(AbstractValueUI):
         self.value1.valueChanged.connect(parameter_push)
         self.value2.valueChanged.connect(parameter_push)
         self.value3.valueChanged.connect(parameter_push)
-        self.layout.addWidget(self.value1, 1, 0)
-        self.layout.addWidget(self.value2, 1, 1)
-        self.layout.addWidget(self.value3, 1, 2)
+        self.layout.addWidget(self.value1, 1, 0, 1, 1)
+        self.layout.addWidget(self.value2, 1, 1, 1, 1)
+        self.layout.addWidget(self.value3, 1, 2, 1, 1)
 
     def setUI(self, value):
         """
@@ -371,10 +372,10 @@ class Vec4fUI(AbstractValueUI):
         self.value2.valueChanged.connect(parameter_push)
         self.value3.valueChanged.connect(parameter_push)
         self.value4.valueChanged.connect(parameter_push)
-        self.layout.addWidget(self.value1, 1, 0, 1, 2)
-        self.layout.addWidget(self.value2, 1, 4, 1, 2)
-        self.layout.addWidget(self.value3, 1, 8, 1, 2)
-        self.layout.addWidget(self.value4, 1, 12, 1, 2)
+        self.layout.addWidget(self.value1, 1, 0, 1, 1)
+        self.layout.addWidget(self.value2, 1, 1, 1, 1)
+        self.layout.addWidget(self.value3, 1, 2, 1, 1)
+        self.layout.addWidget(self.value4, 1, 3, 1, 1)
 
     def setUI(self, value):
         """
