@@ -76,6 +76,11 @@ class ParameterView(QGroupBox):
         self.critical = QLineEdit()
         self.layout.addWidget(self.critical, 8, 1)
 
+        # tags
+        self.tags_label = QLabel('tags')
+        self.layout.addWidget(self.tags_label, 9, 0)
+        self.tags = QLineEdit()
+        self.layout.addWidget(self.tags, 9, 1)
 
     def inspect(self, parameter):
         self.parameter = parameter
@@ -105,3 +110,6 @@ class ParameterView(QGroupBox):
 
         # critical
         self.unit.setText(str(self.parameter.node.critical))
+
+        # tags
+        self.tags.setText(str(self.parameter.node.tags))
