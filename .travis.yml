@@ -1,0 +1,37 @@
+sudo: required
+dist: trusty
+language: python
+
+#virtualenv:
+#  system_site_packages: true
+
+python:
+  - "3.3"
+  - "3.4"
+  - "3.5"
+  - "3.5-dev" # 3.5 development branch
+  - "3.6"
+  - "3.6-dev" # 3.6 development branch
+  - "nightly" # currently points to 3.7-dev
+
+install:
+  - sudo apt-get update
+  # install liblo before pyliblo
+  - sudo apt-get -qq install python3 python3-dev
+  # upgrade pip itself
+  - pip3 install --upgrade pip
+  # install what it needs
+  - pip3 install -r requirements.txt
+  # install to publish documentation from push or tag
+  - pip3 install travis-sphinx
+  # install the package itself
+  - pip3 install -ve .
+
+script:
+  # build the documentation
+  - travis-sphinx build
+
+after_success: 
+  - travis-sphinx deploy
+  - cd tests
+  - coveralls
