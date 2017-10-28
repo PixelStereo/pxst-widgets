@@ -1,3 +1,0 @@
-include versioneer.py
-recursive-include . *.py
-include README.md
