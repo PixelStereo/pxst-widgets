@@ -84,7 +84,6 @@ class ParameterView(QGroupBox):
 
     def inspect(self, parameter):
         self.parameter = parameter
-        print(dir(parameter.node))
         # address
         self.setTitle(str(parameter.node))
         # description
@@ -113,3 +112,36 @@ class ParameterView(QGroupBox):
 
         # tags
         self.tags.setText(str(self.parameter.node.tags))
+
+class DeviceInspector(QGroupBox):
+    """
+    Base class for Inspecter Widgets
+    """
+    def __init__(self, device):
+        super(DeviceInspector, self).__init__()
+        self.layout = QGridLayout()
+        self.setLayout(self.layout)
+        self.setup()
+        self.setMinimumWidth(300)
+        self.device = device
+
+        if device:
+            self.inspect(device)
+        else:
+            self.setTitle('select a device to inspect')
+
+    def setup(self):
+
+        # value
+        # description
+        self.root_node_label = QLabel('root_node')
+        self.layout.addWidget(self.root_node_label, 0, 0)
+        self.root_node = QLineEdit()
+        self.layout.addWidget(self.root_node, 0, 1)        
+
+    def inspect(self, device):
+        self.device = device
+        # address
+        self.setTitle(str(self.device.name))
+        # description
+        self.root_node.setText(str(self.device.root_node))

@@ -11,7 +11,7 @@ from pyossia import ossia
 from PyQt5.QtCore import Qt
 from PyQt5.Qt import QTimer, QThread, pyqtSignal, QPalette
 from PyQt5.QtWidgets import QGroupBox, QGridLayout
-from pxst_widgets.inspector import ParameterView
+from pxst_widgets.inspector import ParameterView, DeviceInspector
 
 
 class DeviceUpdater(QThread):
@@ -49,9 +49,13 @@ class DeviceView(Panel):
         self.device = device
         self.selected = None
         self.view_db = {}
+        # register this view in the view list
+        self.view_db.setdefault(device, self)
         self.updater = None
         self.inspector = ParameterView(None)
+        self.inspector_device = DeviceInspector(self.device)
         self.layout.addWidget(self.inspector, 0, 0)
+        self.layout.addWidget(self.inspector_device, 0, 0)
         self.parameters = QGroupBox('parameters available')
         self.parameters_layout = QGridLayout()
         self.parameters.setLayout(self.parameters_layout)
@@ -72,7 +76,8 @@ class DeviceView(Panel):
         for param in self.device.root_node.get_parameters():
             # create the UI for this parameter
             remote = self.add_remote(param)
-            remote.selection_update.connect(self.selection_changed)
+            remote.selection_update.connect(self.param_selected)
+            self.selection_update.connect(self.device_selected)
             remote.setStyleSheet("""
                QGroupBox 
                { 
@@ -91,11 +96,13 @@ class DeviceView(Panel):
             # add the remote to the layout
             self.parameters_layout.addWidget(remote)
 
-    def selection_changed(self, parameter):
+    def param_selected(self, parameter):
         """
         a parameter has been selected by clicking inside its groupbox
         """
         # Release last selection
+        self.inspector.show()
+        self.inspector_device.hide()
         if self.selected:
             ui = self.view_db[self.selected]
             ui.setStyleSheet("""
@@ -117,6 +124,33 @@ class DeviceView(Panel):
            """
         )
 
+    def device_selected(self, device):
+        """
+        a device has been selected by clicking inside its groupbox
+        """
+        # Release last selection
+        self.inspector.hide()
+        self.inspector_device.show()
+        if self.selected:
+            ui = self.view_db[self.selected]
+            ui.setStyleSheet("""
+                QGroupBox 
+                { 
+                    border:1px solid rgb(216, 216, 216); 
+                }
+                """
+            )
+        self.inspector_device.inspect(device)
+        ui = self.view_db[device]
+        self.selected = device
+        ui = self.view_db[device]
+        self.setStyleSheet("""
+           QGroupBox 
+           { 
+               border:1px solid rgb(0, 146, 207); 
+           }
+           """
+        )
 
     def parameter_update(self, parameter, value):
         """

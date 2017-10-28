@@ -6,7 +6,7 @@ A Panel is a Group of widget designed to add Parameter remotes
 """
 
 from PyQt5.QtWidgets import QGroupBox, QGridLayout
-
+from PyQt5.QtCore import pyqtSignal
 from pyossia import ossia
 from pxst_widgets.remote import Vec3fUI, Vec4fUI, ListUI, CharUI, ImpulseUI
 from pxst_widgets.remote import FloatUI, BoolUI, IntUI, StringUI, Vec2fUI
@@ -15,6 +15,7 @@ class Panel(QGroupBox):
     """
     A QGroupBox to put one or several remote inside
     """
+    selection_update = pyqtSignal(ossia.LocalDevice)
     def __init__(self, *args, **kwargs):
         super(Panel, self).__init__()
         # create a layout for this groupbox (to attach widgets on)
@@ -23,6 +24,13 @@ class Panel(QGroupBox):
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.device = None
         self.setLayout(self.layout)
+
+    def mousePressEvent(self, event):
+        """
+        This is used to know if the remote UI has been Clicked
+        """
+        self.selection_update.emit(self.device)
+        event.accept()
 
     def add_remote(self, parameter):
         """
