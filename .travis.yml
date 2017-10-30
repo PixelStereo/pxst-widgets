@@ -18,7 +18,7 @@ install:
   # install to publish documentation from push or tag
   - pip3 install travis-sphinx
   # build a python wheel
-  - python3 setup.py bdist_whell --universal
+  - python3 setup.py bdist_wheel --universal
   # install the package itself
   - pip3 install -ve .
   # install virtual x11 window for testing the app
