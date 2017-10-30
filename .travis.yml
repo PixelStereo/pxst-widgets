@@ -15,10 +15,10 @@ install:
   - sudo apt-get -qq install python3 python3-dev
   # upgrade pip itself
   - pip3 install --upgrade pip
-  # install what it needs
-  - pip3 install -r requirements.txt
   # install to publish documentation from push or tag
   - pip3 install travis-sphinx
+  # build a python wheel
+  - python3 setuo.py bdist_whell --universal
   # install the package itself
   - pip3 install -ve .
   # install virtual x11 window for testing the app
@@ -32,3 +32,14 @@ after_success:
   - travis-sphinx deploy
   - cd tests
   - coveralls
+
+deploy:
+  - provider: releases
+    file_glob: true
+    file: dist/pxst_widgets*.whl
+    skip_cleanup: true
+    draft: false
+    prerelease: false
+    on:
+      repo: PixelStereo/pxst-widgets
+      tags: true

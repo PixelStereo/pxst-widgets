@@ -1,2 +1,0 @@
-pyossia
-PyQt5

@@ -43,9 +43,7 @@ setup(
     ],
   keywords=['creative', 'controls', 'osc', 'oscquery', 'websocket', 'gui', 'graphic user interface'],
   packages          = ['pxst_widgets'],
-  install_requires=[
-          'PyQt5', 'pyossia'
-      ],
+  install_requires=['PyQt5', 'pyossia'],
   extras_require={
     'test': ['coverage']
     },
