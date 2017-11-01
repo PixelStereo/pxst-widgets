@@ -40,6 +40,7 @@ class MainWindow(QMainWindow):
         self.setAutoFillBackground(True)
         # Draw an UI for my_device
         self.panel = DeviceView(my_device, width='auto', height='auto')
+        print(3)
         self.layout = QHBoxLayout()
         self.layout.addWidget(self.panel)
         main_box = QWidget()

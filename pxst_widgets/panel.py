@@ -11,6 +11,7 @@ from pyossia import ossia
 from pxst_widgets.inspector import NodeView, ParameterView
 from pxst_widgets.remote import Vec3fUI, Vec4fUI, ListUI, CharUI, ImpulseUI
 from pxst_widgets.remote import FloatUI, BoolUI, IntUI, StringUI, Vec2fUI
+from pxst_widgets.device_queue import DeviceQueue
 
 class Panel(QGroupBox):
     """
@@ -23,7 +24,11 @@ class Panel(QGroupBox):
         self.layout = QGridLayout()
         self.layout.setSpacing(0)
         self.layout.setContentsMargins(0, 0, 0, 0)
-        self.device = None
+        self._device = None
+        print(1)
+        if len(args) > 0:
+            self.device = args[0]
+        print(2)
         self.setLayout(self.layout)
 
     def mousePressEvent(self, event):
@@ -72,3 +77,14 @@ class Panel(QGroupBox):
             inspector = ParameterView(node_or_param_to_inspect)
         self.layout.addWidget(inspector, 1, 1)
         return inspector
+
+    @property
+    def device(self):
+        return self._device
+    @device.setter
+    def device(self, device):
+        self._device = device
+        # create a messageQueue for this Device
+        print('ca bloque ici')
+        self.msgq = ossia.MessageQueue(self.device)
+        self.updater = DeviceQueue(self)

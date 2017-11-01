@@ -24,14 +24,13 @@ class DeviceView(Panel):
     todo : tuples : depend of the unit (color, spatial, etc…)
     """
     def __init__(self, device, **kwargs):
-        super(DeviceView, self).__init__()
+        super(DeviceView, self).__init__(device, **kwargs)
         # create a layout for this groupbox (to attach widgets on)
         self.device = device
         self.selected = None
         self.view_db = {}
         # register this view in the view list
         self.view_db.setdefault(device, self)
-        self.updater = None
         self.inspector = ParameterView(None)
         self.inspector_device = DeviceInspector(self.device)
         self.layout.addWidget(self.inspector, 0, 0)
@@ -46,13 +45,12 @@ class DeviceView(Panel):
         """
         create a Remote for each parameter
         """
-        self.msgq = ossia.MessageQueue(self.device)
-        self.updater = DeviceQueue(self)
         # set title for the DeviceView
         try:
             self.setTitle(self.device.name)
         except:
             self.setTitle(str(self.device))
+        # iterate all parameters for this device
         for param in self.device.root_node.get_parameters():
             # create the UI for this parameter
             remote = self.add_remote(param)
