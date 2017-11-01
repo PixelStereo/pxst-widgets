@@ -8,6 +8,54 @@ all attributes or a device, a node or a parameter.
 
 from PyQt5.QtWidgets import QGroupBox, QGridLayout, QLineEdit, QLabel
 
+
+class NodeView(QGroupBox):
+    """
+    Base class for Inspecter Widgets
+    """
+    def __init__(self, node):
+        super(NodeView, self).__init__()
+        self.layout = QGridLayout()
+        self.setLayout(self.layout)
+        self.setup()
+        self.setMinimumWidth(300)
+        self.inspect(node)
+
+    def setup(self):
+
+        # value
+        # description
+        self.description_label = QLabel('description')
+        self.layout.addWidget(self.description_label, 0, 0)
+        self.description = QLineEdit()
+        self.layout.addWidget(self.description, 0, 1)        
+
+        # critical
+        self.critical_label = QLabel('critical')
+        self.layout.addWidget(self.critical_label, 1, 0)
+        self.critical = QLineEdit()
+        self.layout.addWidget(self.critical, 1, 1)
+
+        # tags
+        self.tags_label = QLabel('tags')
+        self.layout.addWidget(self.tags_label, 2, 0)
+        self.tags = QLineEdit()
+        self.layout.addWidget(self.tags, 2, 1)
+
+    def inspect(self, node):
+        self.node = node
+        # address
+        self.setTitle(str(node))
+        # description
+        self.description.setText(self.node.description)
+
+        # critical
+        self.critical.setText(str(self.node.critical))
+
+        # tags
+        self.tags.setText(str(self.node.tags))
+
+
 class ParameterView(QGroupBox):
     """
     Base class for Inspecter Widgets
@@ -108,7 +156,7 @@ class ParameterView(QGroupBox):
         self.unit.setText(str(self.parameter.unit))
 
         # critical
-        self.unit.setText(str(self.parameter.node.critical))
+        self.critical.setText(str(self.parameter.node.critical))
 
         # tags
         self.tags.setText(str(self.parameter.node.tags))

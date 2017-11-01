@@ -8,6 +8,7 @@ A Panel is a Group of widget designed to add Parameter remotes
 from PyQt5.QtWidgets import QGroupBox, QGridLayout
 from PyQt5.QtCore import pyqtSignal
 from pyossia import ossia
+from pxst_widgets.inspector import NodeView, ParameterView
 from pxst_widgets.remote import Vec3fUI, Vec4fUI, ListUI, CharUI, ImpulseUI
 from pxst_widgets.remote import FloatUI, BoolUI, IntUI, StringUI, Vec2fUI
 
@@ -62,3 +63,12 @@ class Panel(QGroupBox):
             remote = StringUI(parameter)
         self.layout.addWidget(remote, 1, 1)
         return remote
+
+
+    def add_inspector(self, node_or_param_to_inspect):
+        if node_or_param_to_inspect.__class__.__name__ == 'Node':
+            inspector = NodeView(node_or_param_to_inspect)
+        elif node_or_param_to_inspect.__class__.__name__ == 'Parameter':
+            inspector = ParameterView(node_or_param_to_inspect)
+        self.layout.addWidget(inspector, 1, 1)
+        return inspector
