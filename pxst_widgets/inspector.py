@@ -129,6 +129,7 @@ class DeviceInspector(QGroupBox):
             self.inspect(device)
         else:
             self.setTitle('select a device to inspect')
+        self.hide()
 
     def setup(self):
 
