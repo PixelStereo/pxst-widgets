@@ -29,7 +29,8 @@ class Panel(QGroupBox):
         """
         This is used to know if the remote UI has been Clicked
         """
-        self.selection_update.emit(self.device)
+        if self.device:
+            self.selection_update.emit(self.device)
         event.accept()
 
     def add_remote(self, parameter):
