@@ -151,7 +151,7 @@ class BoolUI(AbstractValueUI):
         super(BoolUI, self).__init__(parameter)
         self.value = QPushButton(str(self.parameter.value))
         self.value.setCheckable(True)
-        self.value.setFlat(True)
+        self.value.setFlat(False)
         self.value.toggled.connect(lambda value: self.value.setText(str(value)))
         self.layout.addWidget(self.value, 1, 0, 1, 8)
         self.value.toggled.connect(self.parameter.push_value)
