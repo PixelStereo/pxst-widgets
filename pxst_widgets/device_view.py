@@ -12,28 +12,8 @@ from PyQt5.QtCore import Qt
 from PyQt5.Qt import QTimer, QThread, pyqtSignal, QPalette
 from PyQt5.QtWidgets import QGroupBox, QGridLayout
 from pxst_widgets.inspector import ParameterView, DeviceInspector
+from pxst_widgets.device_queue import DeviceQueue
 
-
-class DeviceUpdater(QThread):
-    """
-    Run a Device update queue
-    """
-    param_update = pyqtSignal(ossia.Parameter, object)
-    def __init__(self, parent):
-        super(DeviceUpdater, self).__init__()
-        self.msgq = parent.msgq
-        self.updater = None
-        self.start()
-
-    def __del__(self):
-        self.wait()
-
-    def run(self):
-        while True:
-            param_update = self.msgq.pop()
-            if param_update != None:
-                parameter, value = param_update
-                self.param_update.emit(parameter, value)
 
 class DeviceView(Panel):
     """
@@ -67,7 +47,7 @@ class DeviceView(Panel):
         create a Remote for each parameter
         """
         self.msgq = ossia.MessageQueue(self.device)
-        self.updater = DeviceUpdater(self)
+        self.updater = DeviceQueue(self)
         # set title for the DeviceView
         try:
             self.setTitle(self.device.name)
