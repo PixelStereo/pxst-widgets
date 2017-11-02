@@ -66,7 +66,7 @@ class DeviceView(Panel):
             # register this view in the view list
             self.view_db.setdefault(param, remote)
             # request for signal updates
-            self.msgq.register(param)
+            self.updater.msgq.register(param)
             # connect the updater thread to this remote
             self.updater.param_update.connect(self.parameter_update)
             # update current state

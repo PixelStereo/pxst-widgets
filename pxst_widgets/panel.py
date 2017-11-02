@@ -25,10 +25,8 @@ class Panel(QGroupBox):
         self.layout.setSpacing(0)
         self.layout.setContentsMargins(0, 0, 0, 0)
         self._device = None
-        print(1)
         if len(args) > 0:
             self.device = args[0]
-        print(2)
         self.setLayout(self.layout)
 
     def mousePressEvent(self, event):
@@ -83,8 +81,7 @@ class Panel(QGroupBox):
         return self._device
     @device.setter
     def device(self, device):
-        self._device = device
-        # create a messageQueue for this Device
-        print('ca bloque ici')
-        self.msgq = ossia.MessageQueue(self.device)
-        self.updater = DeviceQueue(self)
+        if device:
+            self._device = device
+            # create a messageQueue for this Device
+            self.updater = DeviceQueue(self, device)

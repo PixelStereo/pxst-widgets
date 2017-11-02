@@ -15,10 +15,9 @@ class DeviceQueue(QThread):
     Run a Device update queue
     """
     param_update = pyqtSignal(ossia.Parameter, object)
-    def __init__(self, parent):
+    def __init__(self, parent, device):
         super(DeviceQueue, self).__init__()
-        self.msgq = parent.msgq
-        self.updater = None
+        self.msgq = ossia.MessageQueue(device)
         self.start()
 
     def __del__(self):
