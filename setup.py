@@ -6,7 +6,7 @@ setup for the pxst_widgets package
 """
 
 # Always prefer setuptools over distutils
-from setuptools import setup
+from setuptools import setup, find_packages
 # To use a consistent encoding
 from codecs import open
 from os import path
@@ -42,7 +42,7 @@ setup(
     'Topic :: Software Development :: Libraries :: Python Modules'
     ],
   keywords=['creative', 'controls', 'osc', 'oscquery', 'websocket', 'gui', 'graphic user interface'],
-  packages          = ['pxst_widgets'],
+  packages = find_packages(),
   install_requires=['PyQt5', 'pyossia'],
   extras_require={
     'test': ['coverage']
