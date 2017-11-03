@@ -1,5 +1,5 @@
 # PyOssia Widgets
-[![Build Status](https://travis-ci.org/PixelStereo/pxst_widgets.svg?branch=master)](https://travis-ci.org/PixelStereo/pxst_widgets)    
+[![Build Status](https://travis-ci.org/PixelStereo/pxst-widgets.svg?branch=master)](https://travis-ci.org/PixelStereo/pxst-widgets)    
     
 pxst_widgets is a python Package that provides widgets for [pyossia](http://github.com/PixelStereo/pyossia)    
 
