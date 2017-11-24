@@ -12,7 +12,6 @@ from PyQt5.QtCore import Qt
 from PyQt5.Qt import QTimer, QThread, pyqtSignal, QPalette
 from PyQt5.QtWidgets import QGroupBox, QGridLayout
 from pxst_widgets.inspector import ParameterView, DeviceInspector
-from pxst_widgets.device_queue import DeviceQueue
 
 
 class DeviceView(Panel):
