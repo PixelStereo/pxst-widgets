@@ -191,6 +191,6 @@ class DeviceInspector(QGroupBox):
     def inspect(self, device):
         self.device = device
         # address
-        self.setTitle(str(self.device.name))
+        #self.setTitle(str(self.device.name))
         # description
         self.root_node.setText(str(self.device.root_node))
